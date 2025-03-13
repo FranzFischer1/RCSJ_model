@@ -40,16 +40,11 @@ $$v (\tau) = \frac{d \phi (\tau)}{d \tau}$$
 
 so that the circuit law becomes a system:
 
-$$\frac{d \phi}{d \tau} = v \qquad
-\frac{d v}{d \tau}
-= \gamma_{\mathrm{DC}} + \gamma_{\mathrm{AC}} \,\sin \!\bigl(\Omega \,\tau\bigr)
-- I_{\mathrm{JJ}}(\phi) - \frac{1}{\beta_{c}} \, v + \eta (\tau)$$
+$$\frac{d \phi}{d \tau} = v \qquad\frac{d v}{d \tau}= \gamma_{\mathrm{DC}} + \gamma_{\mathrm{AC}} \,\sin \!\bigl(\Omega \,\tau\bigr)- I_{\mathrm{JJ}}(\phi) - \frac{1}{\beta_{c}} \, v + \eta (\tau)$$
 
 Here, the junction current $I_{\mathrm{JJ}}(\phi)$ can be purely **$2 \pi$**‐periodic (the usual \(\sin (\phi)\)) or partially $4 \pi$–periodic:
 
-$$I_{\mathrm{JJ}}(\phi) = \bigl(1 - \text{frac\_4pi}\bigr)\,\sin\!\bigl(\phi\bigr)
-\;+\;
-\bigl(\text{frac\_4pi}\bigr)\,\sin\!\bigl(\tfrac{\phi}{2}\bigr).$$
+$$I_{\mathrm{JJ}}(\phi) = \bigl(1 - \text{frac\_4pi}\bigr)\,\sin\!\bigl(\phi\bigr)\;+\;\bigl(\text{frac\_4pi}\bigr)\,\sin\!\bigl(\tfrac{\phi}{2}\bigr).$$
 
 If `frac_4pi = 0`, we recover the standard \(\sin(\phi)\). If `frac_4pi = 1`, we get \(\sin(\phi/2)\), effectively doubling the period to $4 \pi$.
 
@@ -60,8 +55,8 @@ The random forcing \(\eta (\tau)\) stems from the resistor’s thermal noise in 
 $$\eta (\tau) \approx \text{noiseAmp} \times \mathcal{N}(0,1)\,\sqrt{d\tau}$$
 
 We can update `noiseAmp` each time if the system’s average dimensionless voltage $v_{0}$ changes significantly, e.g. from the interpolation formula
-$$S_{I} \approx 2 e \,\frac{v_{0}}{R}\,\coth \!\Bigl(\frac{e \,v_{0}}{2 k_{B} T}\Bigr)\quad
-\text{noiseAmp} = \sqrt{\frac{2 S_{I}}{I_{c}^{2} \,\omega_{p}\,\Delta \tau}}$$
+
+$$S_{I} \approx 2 e \,\frac{v_{0}}{R}\,\coth \!\Bigl(\frac{e \,v_{0}}{2 k_{B} T}\Bigr)\quad\text{noiseAmp} = \sqrt{\frac{2 S_{I}}{I_{c}^{2} \,\omega_{p}\,\Delta \tau}}$$
 
 ## 2  Heun Integrator in Python
 
@@ -69,28 +64,15 @@ We solve the system in dimensionless time steps \(\Delta \tau\). In each step:
 
 1. \(\phi_{n}, v_{n}\) are known. Generate a standard normal \(\xi\) and let $dW = \xi \sqrt{\Delta \tau}$.
 2. Drift at old state:
-   $$f_{\phi} = v_{n}, \quad
-   f_{v} = \gamma_{\mathrm{DC}} + \gamma_{\mathrm{AC}}\sin (\Omega\, \tau_{n})
-           - I_{\mathrm{JJ}}(\phi_{n})
-           - \tfrac{1}{\beta_{c}} v_{n}.$$
+   
+   $$f_{\phi} = v_{n}, \quadf_{v} = \gamma_{\mathrm{DC}} + \gamma_{\mathrm{AC}}\sin (\Omega\, \tau_{n})- I_{\mathrm{JJ}}(\phi_{n})- \tfrac{1}{\beta_{c}} v_{n}.$$
    
 4. **Predictor** (Euler):
-   $$\phi_{\star} = \phi_{n} + f_{\phi}\,\Delta \tau,
-   \quad
-   v_{\star}   = v_{n} + f_{v}\,\Delta \tau + (\text{noiseAmp}) \, dW.
-   $$
+   $$\phi_{\star} = \phi_{n} + f_{\phi}\,\Delta \tau,\quad v_{\star}   = v_{n} + f_{v}\,\Delta \tau + (\text{noiseAmp}) \, dW.$$
 5. Evaluate drift at predicted state:
-   $$
-   f_{\phi,\star} = v_{\star},
-   \quad
-   f_{v,\star} = \gamma_{\mathrm{DC}} + \gamma_{\mathrm{AC}}\sin (\Omega(\tau_{n}+\Delta \tau))
-                 - I_{\mathrm{JJ}}(\phi_{\star})
-                 - \tfrac{1}{\beta_{c}} v_{\star}.
-   $$
-6. **Corrector**:
-   $$
-   \phi_{n+1} = \phi_{n} + \tfrac{1}{2}\bigl(f_{\phi} + f_{\phi,\star}\bigr)\,\Delta \tau,
-   \quad
-   v_{n+1}   = v_{n} + \tfrac{1}{2}\bigl(f_{v} + f_{v,\star}\bigr)\,\Delta \tau
-               + (\text{noiseAmp}) \, dW.
-   $$
+   
+   $$f_{\phi,\star} = v_{\star} \quad f_{v,\star} = \gamma_{\mathrm{DC}} + \gamma_{\mathrm{AC}}\sin (\Omega(\tau_{n}+\Delta \tau))- I_{\mathrm{JJ}}(\phi_{\star})- \tfrac{1}{\beta_{c}} v_{\star}.$$
+   
+7. **Corrector**:
+
+   $$\phi_{n+1} = \phi_{n} + \tfrac{1}{2}\bigl(f_{\phi} + f_{\phi,\star}\bigr) \Delta \tau \quad v_{n+1}   = v_{n} + \tfrac{1}{2}\bigl(f_{v} + f_{v,\star}\bigr)\,\Delta \tau + (\text{noiseAmp}) \, dW.$$
