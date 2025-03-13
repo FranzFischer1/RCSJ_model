@@ -4,7 +4,7 @@ This repository provides a Python implementation of a **Resistively and Capaciti
 
 ## 1  Physical Model and Noise Derivation
 
-Consider a Josephson junction with critical current \( I_{c} \). It is placed in parallel with a resistor \( R \) and a capacitor \( C \), all driven by a current \( I_{\mathrm{bias}}(t) \). The voltage across the junction is  
+Consider a Josephson junction with critical current $ I_{c} $. It is placed in parallel with a resistor \( R \) and a capacitor \( C \), all driven by a current \( I_{\mathrm{bias}}(t) \). The voltage across the junction is  
 \[
 V (t) = \frac{\hbar}{2 e} \, \frac{d \phi (t)}{d t} ,
 \]
