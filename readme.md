@@ -30,8 +30,8 @@ which **interpolates** between a linear Johnson regime at small $V$ and shot‐l
 
 To eliminate physical constants, define:
 
-- $\omega_{p} = \sqrt{\dfrac{2 e I_{c}}{\hbar \, C}}$ : the **plasma frequency**,
-- $\tau = \omega_{p} \, t$ : a dimensionless time,
+- $\omega_{p} = \sqrt{\dfrac{2 e I_{c}}{\hbar C}}$ : the **plasma frequency**,
+- $\tau = \omega_{p} t$ : a dimensionless time,
 - $\gamma_{\mathrm{DC}} = \dfrac{I_{\mathrm{DC}}}{I_{c}}$ , $\gamma_{\mathrm{AC}} = \dfrac{I_{\mathrm{AC}}}{I_{c}}$ : normalized DC/AC drives,
 - $\Omega = \dfrac{\omega_{\mathrm{drive}}}{\omega_{p}}$ : dimensionless AC frequency,
 - $\beta_{c} = \omega_{p} \, R \, C$ : the Stewart–McCumber parameter.
@@ -96,35 +96,3 @@ We solve the system in dimensionless time steps \(\Delta \tau\). In each step:
    v_{n+1}   = v_{n} + \tfrac{1}{2}\bigl(f_{v} + f_{v,\star}\bigr)\,\Delta \tau
                + (\text{noiseAmp}) \, dW.
    $$
-
-## 3  Repository Overview
-
-- `rcsj_simulation.py`: main Python script that:
-  - Reads parameters \((R, C, T, I_{c}, f_{\mathrm{drive}}, \dots)\).
-  - Defines the dimensionless system, integrator steps, and noise amplitude formula.
-  - Runs a range of DC biases and ensemble runs, discarding transients and averaging final voltages.
-  - Plots \(\langle v \rangle / \Omega\) vs. \(\gamma_{\mathrm{DC}}\).
-
-- `requirements.txt`: typical dependencies (NumPy, Matplotlib, etc.).
-
-- Optional: 
-  - `numba` for JIT compilation of the integrator function.
-  - `joblib` for parallel loops over ensemble runs.
-  - `tqdm` for a console progress bar.
-
-## 4  Example Usage
-
-1. Install Python 3.7+.
-2. Clone this repo and `cd` into it.
-3. (Optional) `pip install -r requirements.txt` or manually install `numpy, matplotlib, joblib, tqdm, numba`.
-4. Run:
-   ```
-   python rcsj_simulation.py
-   ```
-   to see the dimensionless I–V curve and various printed parameter values.
-
-A typical output might show Shapiro steps if the AC amplitude is large enough, or purely monotonic curves if it is small.
-
----
-
-**We hope this code and derivation help you explore the RCSJ system, including partial $4\pi$ conduction and thermal/shot noise.**  
