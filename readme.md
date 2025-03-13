@@ -66,6 +66,13 @@ $$I_{\mathrm{JJ}}(\phi) = \bigl(1-\text{frac4pi}\bigr) \sin(\phi) + \bigl(\text{
 - If `frac4pi=0`, we recover the usual $2\pi$-periodic $\sin(\phi)$.
 - If `frac4pi=1`, we get $\sin(\phi/2)$, doubling the period to $4\pi$.
 
+## Voltage Transient and Why We Take the Mean
+
+When the system starts from some initial condition (e.g. $\phi=0$, $v=0$), there is often a **transient** phase where the junction’s voltage quickly evolves from this initial state to a more statistically stationary regime. In practice, we:
+
+- **Discard** some initial fraction of the simulation steps (e.g. 2/3) to remove transient effects.
+- **Average** the final portion of the dimensionless voltage $v(\tau)$ to obtain a representative “steady” or “long-time” average. This average is typically what we refer to as the measured or effective DC voltage. That is how we get an $I\!-\!V$ (or $\gamma\!-\!v$) characteristic.
+
 ## Heun Integrator in Python
 
 We simulate over dimensionless timesteps $\Delta\tau$. In each step:
@@ -87,9 +94,4 @@ Evaluate drift at predicted state:
 
    $$\phi_{n+1}=\phi_{n}+\tfrac12\bigl(f_{\phi}+f_{\phi,\star}\bigr)\Delta\tau,\quad v_{n+1}=v_{n}+\tfrac12\bigl(f_{v}+f_{v,\star}\bigr)\Delta\tau+(\text{noiseAmp}) dW.$$
 
-## Voltage Transient and Why We Take the Mean
 
-When the system starts from some initial condition (e.g. $\phi=0$, $v=0$), there is often a **transient** phase where the junction’s voltage quickly evolves from this initial state to a more statistically stationary regime. In practice, we:
-
-- **Discard** some initial fraction of the simulation steps (e.g. 2/3) to remove transient effects.
-- **Average** the final portion of the dimensionless voltage $v(\tau)$ to obtain a representative “steady” or “long-time” average. This average is typically what we refer to as the measured or effective DC voltage. That is how we get an $I\!-\!V$ (or $\gamma\!-\!v$) characteristic.
