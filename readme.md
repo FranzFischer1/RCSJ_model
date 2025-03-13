@@ -31,9 +31,7 @@ $$S_{I}(V) \approx 2 e \frac{\lvert V\rvert}{R} \coth\!\Bigl(\frac{e \lvert V\rv
 
 Thus, for small voltages we recover Johnson noise, and for large voltages we approach shot noise.
 
-The noise term $\eta(\tau)$ is represented mathematically as a white noise, often interpreted in the language of Ito or Stratonovich integrals. Numerically, we approximate it as random increments of a Wiener process $W(\tau)$, so that $\eta(\tau),d\tau \approx \sqrt{\Delta\tau},\mathcal{N}(0,1)$ each step. In practice, we call a random number generator to obtain normal deviates. This process ensures physically consistent fluctuations of the junction current/voltage over time.
-
-The random increment $\eta(\tau)$ models the resistor’s thermal (or shot) noise in dimensionless form. Suppose its amplitude depends on the junction’s average dimensionless voltage $v_{0}$. Then:
+The random current term $\eta(\tau)$ models the resistor’s thermal (or shot) noise in dimensionless form. Suppose its amplitude depends on the junction’s average dimensionless voltage $v_{0}$. Then:
 
 $$\eta(\tau)\approx\text{noiseAmp}\times\mathcal{N}(0,1) \sqrt{d\tau},$$
 
@@ -42,6 +40,8 @@ where
 $$S_{I}\approx2 e \frac{v_{0}}{R} \coth\!\Bigl(\frac{e v_{0}}{2 k_{B} T}\Bigr)\quad\Longrightarrow\quad\text{noiseAmp}=\sqrt{\frac{2 S_{I}}{I_{c}^{2} \omega_{p} \Delta\tau}}.$$
 
 In each time step, we compute the final/average dimensionless voltage $v_{0}$, then use it to update `noiseAmp`. This ensures the noise transitions smoothly between Johnson or shot regimes depending on the operating point of the junction.
+
+The noise term $\eta(\tau)$ is represented mathematically as a white noise, often interpreted in the language of Ito or Stratonovich integrals. Numerically, we approximate it as random increments of a Wiener process $W(\tau)$, so that $\eta(\tau),d\tau \approx \sqrt{\Delta\tau},\mathcal{N}(0,1)$ each step. In practice, we call a random number generator to obtain normal deviates. This process ensures physically consistent fluctuations of the junction current/voltage over time.
 
 ### Dimensionless RCSJ Equation
 
