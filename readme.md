@@ -100,6 +100,6 @@ Evaluate drift at predicted state:
 
    $$\phi_{n+1}=\phi_{n}+\tfrac12\bigl(f_{\phi}+f_{\phi\star}\bigr)\Delta\tau,\quad v_{n+1}=v_{n}+\tfrac12\bigl(f_{v}+f_{v\star}\bigr)\Delta\tau+(\text{noiseAmp}) dW.$$
 
-These steps are repeated with the specified d $\tau$ increment and the total integration time specified in multiples of the plasma oscillation period. As described above, the transient is discarded after that. The mean of the non-discarded voltage will be saved as the DC voltage for the IV-curve. The current is set and the voltage is calculated for each current bias. For the first point, the initial conditions for both phase and voltage are 0. The voltage from the previous current bias will be the initial condition for the next current bias. Because the phase is oscillating anyway, the initial condition is always 0 for the phase.
+These steps are repeated with the specified $\delta\tau$ time step and the total integration time specified in multiples of the plasma oscillation period. As described above, the transient is discarded after that. The mean of the non-discarded voltage will be saved as the DC voltage for the IV-curve. For the first point, the initial conditions for both phase and voltage are 0. The voltage from the previous current bias will be the initial condition for the next current bias. Because the phase is oscillating anyway, the initial condition is always 0 for the phase.
 
 
