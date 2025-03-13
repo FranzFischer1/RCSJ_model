@@ -2,7 +2,7 @@
 
 This repository provides a Python implementation of a **Resistively and Capacitively Shunted Josephson Junction (RCSJ)** model, including a thermal noise source from the shunt resistor and an optional $4\pi$-periodic current-phase relation. The code integrates a **stochastic differential equation** (SDE) for the junction’s phase using a Heun‐type (explicit trapezoidal) method in dimensionless form.
 
-## 1  Physical Model and Noise Derivation
+## Physical Model and Noise Derivation
 
 Consider a Josephson junction with critical current $I_{c}$. It is placed in parallel with a resistor $R$ and a capacitor $C$, all driven by a bias current $I_{\mathrm{bias}}(t)$. The voltage across the junction is:
 
@@ -31,6 +31,16 @@ $$S_{I}(V) \approx 2 e \frac{\lvert V\rvert}{R} \coth\!\Bigl(\frac{e \lvert V\rv
 
 Thus, for small voltages we recover Johnson noise, and for large voltages we approach shot noise.
 
+The random forcing $\eta(\tau)$ models the resistor’s thermal (or shot) noise in dimensionless form. Suppose its amplitude depends on the junction’s average dimensionless voltage $v_{0}$. Then:
+
+$$\eta(\tau)\approx\text{noiseAmp}\times\mathcal{N}(0,1) \sqrt{d\tau},$$
+
+where
+
+$$S_{I}\approx2 e \frac{v_{0}}{R} \coth\!\Bigl(\frac{e v_{0}}{2 k_{B} T}\Bigr)\quad\Longrightarrow\quad\text{noiseAmp}=\sqrt{\frac{2 S_{I}}{I_{c}^{2} \omega_{p} \Delta\tau}}.$$
+
+In each time step, we compute the final/average dimensionless voltage $v_{0}$, then use it to update `noiseAmp`. This ensures the noise transitions smoothly between Johnson or shot regimes depending on the operating point of the junction.
+
 ### Dimensionless RCSJ Equation
 
 To eliminate physical constants, define:
@@ -55,18 +65,6 @@ $$I_{\mathrm{JJ}}(\phi) = \bigl(1-\text{frac4pi}\bigr) \sin(\phi) + \bigl(\text{
 
 - If `frac4pi=0`, we recover the usual $2\pi$-periodic $\sin(\phi)$.
 - If `frac4pi=1`, we get $\sin(\phi/2)$, doubling the period to $4\pi$.
-
-### Adding the Noise and Updating its Amplitude
-
-The random forcing $\eta(\tau)$ models the resistor’s thermal (or shot) noise in dimensionless form. Suppose its amplitude depends on the junction’s average dimensionless voltage $v_{0}$. Then:
-
-$$\eta(\tau)\approx\text{noiseAmp}\times\mathcal{N}(0,1) \sqrt{d\tau},$$
-
-where
-
-$$S_{I}\approx2 e \frac{v_{0}}{R} \coth\!\Bigl(\frac{e v_{0}}{2 k_{B} T}\Bigr)\quad\Longrightarrow\quad\text{noiseAmp}=\sqrt{\frac{2 S_{I}}{I_{c}^{2} \omega_{p} \Delta\tau}}.$$
-
-In each time step, we compute the final/average dimensionless voltage $v_{0}$, then use it to update `noiseAmp`. This ensures the noise transitions smoothly between Johnson or shot regimes depending on the operating point of the junction.
 
 ## Heun Integrator in Python
 
