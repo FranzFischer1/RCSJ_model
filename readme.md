@@ -20,7 +20,7 @@ $$S_{I} = 4 k_{B} T \frac{1}{R} \quad (\text{A}^2/\text{Hz})$$
 
 where $k_{B}$ is Boltzmann’s constant. If additional shot noise or more advanced corrections apply, one may write a more general formula such as  
 
-$$S_{I} (V ) \approx 2 e \frac{\lvert V \rvert}{R} \, \coth \!\Bigl(\frac{e\lvert V \rvert}{2 k_{B} T}\Bigr)$$
+$$S_{I} (V) \approx 2 e \frac{\lvert V \rvert}{R} \coth \Bigl(\frac{e \lvert V \rvert}{2 k_{B} T}\Bigr)$$
 
 which **interpolates** between a linear Johnson regime at small $V$ and shot‐like behavior at large $V$. In dimensionless form, we factor out $I_{c}$ and the typical voltage scale.
 
