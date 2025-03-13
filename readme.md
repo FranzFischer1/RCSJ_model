@@ -1,6 +1,6 @@
 # RCSJ Simulation in Python
 
-This repository provides a Python implementation of a **Resistively and Capacitively Shunted Josephson Junction (RCSJ)** model, including a thermal noise source from the shunt resistor and an optional $4\pi$-periodic current-phase relation. The code integrates a **stochastic differential equation** (SDE) for the junction’s phase using a Heun‐type (explicit trapezoidal) method in dimensionless form.
+This repository provides a Python implementation of a **Resistively and Capacitively Shunted Josephson Junction (RCSJ)** model, including a thermal noise source from the shunt resistor, an RF source and an optional $4\pi$-periodic current-phase relation. The code integrates a **stochastic differential equation** (SDE) for the junction’s phase using a Heun‐type (explicit trapezoidal) method in dimensionless form.
 
 ## Physical Model and Noise Derivation
 
