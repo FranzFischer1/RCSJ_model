@@ -68,7 +68,7 @@ $$S_{I}\approx2 e \frac{v_{0}}{R} \coth\!\Bigl(\frac{e v_{0}}{2 k_{B} T}\Bigr)\q
 
 In each time step, we compute the final/average dimensionless voltage $v_{0}$, then use it to update `noiseAmp`. This ensures the noise transitions smoothly between Johnson or shot regimes depending on the operating point of the junction.
 
-The noise term $\eta(\tau)$ is represented mathematically as a white noise, often interpreted in the language of Ito or Stratonovich integrals. Numerically, we approximate it as random increments of a Wiener process $W(\tau)$, so that $\eta(\tau),d\tau \approx \sqrt{\Delta\tau},\mathcal{N}(0,1)$ each step. In practice, we call a random number generator to obtain normal deviates. This process ensures physically consistent fluctuations of the junction current/voltage over time.
+The noise term $\eta(\tau)$ is represented mathematically as a white noise, often interpreted in the language of Ito or Stratonovich integrals. Numerically, we approximate it as random increments of a Wiener process $W(\tau)$, so that $\eta(\tau)d\tau \approx \sqrt{\Delta\tau}\mathcal{N}(0,1)$ each step. In practice, we call a random number generator to obtain the normal istribution random numbers $\mathcal{N}(0,1)$. This process ensures physically consistent fluctuations of the junction current/voltage over time.
 
 
 ## Voltage Transient
