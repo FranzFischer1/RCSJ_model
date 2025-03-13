@@ -8,11 +8,7 @@ Consider a Josephson junction with critical current $I_{c}$. It is placed in par
 $$V (t) = \frac{\hbar}{2 e}\frac{d \phi (t)}{d t}$$
 
 where $\phi (t)$ is the superconducting phase difference. By Kirchhoff’s Current Law, the circuit equation becomes  
-$$I_{\mathrm{bias}} (t)
-= I_{c} \sin \bigl(\phi (t)\bigr)
-+ \frac{V (t)}{R}
-+ C \frac{d V (t)}{d t}
-+ I_{\mathrm{noise}} (t)$$
+$$I_{\mathrm{bias}} (t)= I_{c} \sin \bigl(\phi (t)\bigr)+ \frac{V (t)}{R}+ C \frac{d V (t)}{d t}+ I_{\mathrm{noise}} (t)$$
 
 ### 1.1  Thermal Noise Formula
 
