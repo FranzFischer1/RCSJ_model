@@ -68,7 +68,7 @@ $$I_{\mathrm{JJ}}(\phi) = \bigl(1-\text{frac4pi}\bigr) \sin(\phi) + \bigl(\text{
 
 ## Voltage Transient
 
-When the system starts from some initial condition (e.g. $\phi=0$, $v=0$), there is often a **transient** phase where the junction’s voltage quickly evolves from this initial state to a more statistically stationary regime. In practice, we:
+When the system starts from some initial condition (e.g. $\phi=0$, $v=0$), there is often a **transient** phase where the junction’s voltage quickly evolves from this initial state to a more statistically stationary regime. Even in the steady state, the Voltage is always oscillating due to the 2nd Josephson equation. In practice, we:
 
 - **Discard** some initial fraction of the simulation steps (e.g. 2/3) to remove transient effects.
 - **Average** the final portion of the dimensionless voltage $v(\tau)$ to obtain a representative “steady” or “long-time” average. This average is typically what we refer to as the measured or effective DC voltage. That is how we get an $I\!-\!V$ (or $\gamma\!-\!v$) characteristic.
