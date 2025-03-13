@@ -1,167 +1,141 @@
 # RCSJ Simulation in Python
 
-This repository contains a Python implementation of the **RCSJ (Resistively and Capacitively Shunted Josephson Junction)** model, including thermal noise and an optional AC drive. The simulation demonstrates how to numerically integrate the stochastic differential equation (SDE) for the junction's phase over time, using a Heun‐type (explicit trapezoidal) stochastic integrator. It uses Numba to JIT-compile the core integration loop for speed.
+This repository provides a Python implementation of a **Resistively and Capacitively Shunted Josephson Junction (RCSJ)** model, including a thermal noise source from the shunt resistor and an optional \( 4\pi \)-periodic current-phase relation. The code integrates a **stochastic differential equation** (SDE) for the junction’s phase, using a Heun‐type (explicit trapezoidal) method in dimensionless form.
 
-## 1. Introduction and Background
+## 1  Physical Model and Noise Derivation
 
-A Josephson junction can be idealized by two superconducting electrodes, separated by a thin insulating or normal conducting barrier that permits tunneling of Cooper pairs. In the **RCSJ model**, a junction of critical current \(I_c\) is shunted by a resistor \(R\) and a capacitor \(C\), all in parallel. An external current \(I_{\text{bias}}(t)\) drives the circuit, which may include both DC and AC components. Additionally, **thermal noise** from the resistor is modeled as a stochastic term coupling to the junction’s voltage. 
-
-### 1.1 Physical Equation
-
-Let \(\phi(t)\) be the superconducting phase difference across the junction. The voltage across the junction is given by the Josephson relation:
+Consider a Josephson junction with critical current \( I_{c} \). It is placed in parallel with a resistor \( R \) and a capacitor \( C \), all driven by a current \( I_{\mathrm{bias}}(t) \). The voltage across the junction is  
 \[
-V(t) \;=\; \frac{\hbar}{2e}\,\frac{d\phi}{dt}.
+V (t) = \frac{\hbar}{2 e} \, \frac{d \phi (t)}{d t} ,
 \]
-The circuit obeys Kirchhoff’s current law:
+where \( \phi (t) \) is the superconducting phase difference. By Kirchhoff’s Current Law, the circuit equation becomes  
 \[
-I_{\text{bias}}(t)
-\;=\;
-I_c\,\sin(\phi(t))
-\;+\;
-\frac{V(t)}{R}
-\;+\;
-C \,\frac{dV(t)}{dt}
-\;+\;
-I_{\text{noise}}(t),
+I_{\mathrm{bias}} (t)
+= I_{c} \sin \bigl(\phi (t)\bigr)
++ \frac{V (t)}{R}
++ C \, \frac{d V (t)}{d t}
++ I_{\mathrm{noise}} (t).
 \]
-where \(I_{\text{noise}}(t)\) represents thermal (Johnson–Nyquist) noise from the resistor. Substituting \(V(t) = \tfrac{\hbar}{2e}\dot{\phi}(t)\) yields a second‐order ODE in \(\phi\). We turn it into a **stochastic differential equation** (SDE) by modeling \(I_{\text{noise}}(t)\) as a random forcing, typically white Gaussian noise.
 
-### 1.2 Dimensionless Form
+### 1.1  Thermal Noise Formula
 
-We define a characteristic **plasma frequency** \(\omega_{p} = \sqrt{\tfrac{2eI_c}{\hbar C}}\) and time‐scale \(\tau = \omega_p\,t\). We also scale current by \(I_c\). The normalized system becomes:
+The resistor \( R \) at temperature \( T \) generates **Johnson–Nyquist noise** with a spectral density  
+\[
+S_{I} = 4 k_{B} T \, \frac{1}{R} \quad (\text{A}^2/\text{Hz}),
+\]
+where \( k_{B} \) is Boltzmann’s constant. If additional shot noise or more advanced corrections apply, one may write a more general formula such as  
+\[
+S_{I} (V ) \approx 2 e \, \frac{\lvert V \rvert}{R} \, \coth \!\Bigl(\frac{e\,\lvert V \rvert}{2 k_{B} T}\Bigr) ,
+\]
+which **interpolates** between a linear Johnson regime at small \( V \) and shot‐like behavior at large \( V \). In dimensionless form, we factor out \( I_{c} \) and the typical voltage scale.
+
+### 1.2  Dimensionless RCSJ Equation
+
+To eliminate physical constants, define:
+
+- \( \omega_{p} = \sqrt{\dfrac{2 e I_{c}}{\hbar \, C}} \) : the **plasma frequency**,
+- \( \tau = \omega_{p} \, t \) : a dimensionless time,
+- \( \gamma_{\mathrm{DC}} = \dfrac{I_{\mathrm{DC}}}{I_{c}} \) , \( \gamma_{\mathrm{AC}} = \dfrac{I_{\mathrm{AC}}}{I_{c}} \) : normalized DC/AC drives,
+- \( \Omega = \dfrac{\omega_{\mathrm{drive}}}{\omega_{p}} \) : dimensionless AC frequency,
+- \( \beta_{c} = \omega_{p} \, R \, C \) : the Stewart–McCumber parameter.
+
+Then, letting \( \phi (\tau) \) be the dimensionless phase, define  
+\[
+v (\tau) = \frac{d \phi (\tau)}{d \tau} ,
+\]
+so that the circuit law becomes a system:
 
 \[
-\begin{cases}
-\frac{d\phi}{d\tau} = v,\\[5pt]
-\frac{dv}{d\tau}
-=
-\gamma_{\mathrm{DC}} + \gamma_{\mathrm{AC}}\sin(\Omega\,\tau)
-- \sin(\phi)
-- \frac{1}{\beta_c}\,v
-+ \eta(\tau),
-\end{cases}
+\frac{d \phi}{d \tau} = v , \qquad
+\frac{d v}{d \tau}
+= \gamma_{\mathrm{DC}} + \gamma_{\mathrm{AC}} \,\sin \!\bigl(\Omega \,\tau\bigr)
+- I_{\mathrm{JJ}}(\phi) - \frac{1}{\beta_{c}} \, v + \eta (\tau).
 \]
-where:
 
-- \(\phi(\tau)\) is the dimensionless phase,
-- \(v(\tau)\equiv \tfrac{d\phi}{d\tau}\) is the dimensionless voltage,
-- \(\beta_c = \omega_p R C\) is the **Stewart–McCumber** parameter,
-- \(\gamma_{\mathrm{DC}}, \gamma_{\mathrm{AC}}\) are dimensionless currents \(\tfrac{I_{\mathrm{DC}}}{I_c}\) and \(\tfrac{I_{\mathrm{AC}}}{I_c}\),
-- \(\Omega = \tfrac{\omega_{\text{drive}}}{\omega_p}\) is the **dimensionless AC frequency**,
-- \(\eta(\tau)\) is a Gaussian white noise of some amplitude reflecting the resistor’s thermal noise.
+Here, the junction current \( I_{\mathrm{JJ}}(\phi) \) can be purely **\( 2 \pi \)**‐periodic (the usual \(\sin (\phi)\)) or partially \( 4 \pi \)–periodic:
 
-## 2. Numerical Integration: Heun Method
+\[
+I_{\mathrm{JJ}}(\phi) = \bigl(1 - \text{frac\_4pi}\bigr)\,\sin\!\bigl(\phi\bigr)
+\;+\;
+\bigl(\text{frac\_4pi}\bigr)\,\sin\!\bigl(\tfrac{\phi}{2}\bigr).
+\]
+If `frac_4pi = 0`, we recover the standard \(\sin(\phi)\). If `frac_4pi = 1`, we get \(\sin(\phi/2)\), effectively doubling the period to \( 4 \pi \).
 
-We solve the above SDE using a **Heun** (explicit trapezoid) scheme, which is a stochastic Runge–Kutta‐type integrator that attains **strong order** 1.0 for pathwise solutions. Each step from \(\tau_n\) to \(\tau_{n+1}\) proceeds:
+### 1.3  Adding the Noise
 
-1. **Predictor**: an explicit Euler step to guess the next state,
-2. **Corrector**: re‐evaluate the drift at that guess and average with the old drift,
-3. **Noise**: we add a random increment \(\sqrt{\Delta\tau}\,\mathcal{N}(0,1)\) in the equation for \(v\).
+The random forcing \(\eta (\tau)\) stems from the resistor’s thermal noise in dimensionless form. Suppose the amplitude depends on the average voltage, say
+\[
+\eta (\tau) \approx \text{noiseAmp} \times \mathcal{N}(0,1)\,\sqrt{d\tau}.
+\]
+We can update `noiseAmp` each time if the system’s average dimensionless voltage \( v_{0} \) changes significantly, e.g. from the interpolation formula
+\[
+S_{I} \approx 2 e \,\frac{v_{0}}{R}\,\coth \!\Bigl(\frac{e \,v_{0}}{2 k_{B} T}\Bigr),
+\quad
+\text{noiseAmp} = \sqrt{\frac{2 \,S_{I}}{I_{c}^{2} \,\omega_{p}\,\Delta \tau}}.
+\]
 
-This approach is straightforward yet yields pathwise accuracy beyond Euler–Maruyama’s 0.5 order. In code, we do:
+## 2  Heun Integrator in Python
 
-```python
-# Pseudocode for one step of Heun
-phi_n, v_n = phi[i], v[i]
-dW = np.random.randn() * sqrt(dt)
+We solve the system in dimensionless time steps \(\Delta \tau\). In each step:
 
-# drift at old state
-fphi_n = v_n
-fv_n = gammaDC + gammaAC*sin(Omega*tau_n) - sin(phi_n) - (1/beta_c)*v_n
+1. \(\phi_{n}, v_{n}\) are known. Generate a standard normal \(\xi\) and let \( dW = \xi \sqrt{\Delta \tau} \).
+2. Drift at old state:
+   \[
+   f_{\phi} = v_{n}, \quad
+   f_{v} = \gamma_{\mathrm{DC}} + \gamma_{\mathrm{AC}}\sin (\Omega\, \tau_{n})
+           - I_{\mathrm{JJ}}(\phi_{n})
+           - \tfrac{1}{\beta_{c}} v_{n}.
+   \]
+3. **Predictor** (Euler):
+   \[
+   \phi_{\star} = \phi_{n} + f_{\phi}\,\Delta \tau,
+   \quad
+   v_{\star}   = v_{n} + f_{v}\,\Delta \tau + (\text{noiseAmp}) \, dW.
+   \]
+4. Evaluate drift at predicted state:
+   \[
+   f_{\phi,\star} = v_{\star},
+   \quad
+   f_{v,\star} = \gamma_{\mathrm{DC}} + \gamma_{\mathrm{AC}}\sin (\Omega(\tau_{n}+\Delta \tau))
+                 - I_{\mathrm{JJ}}(\phi_{\star})
+                 - \tfrac{1}{\beta_{c}} v_{\star}.
+   \]
+5. **Corrector**:
+   \[
+   \phi_{n+1} = \phi_{n} + \tfrac{1}{2}\bigl(f_{\phi} + f_{\phi,\star}\bigr)\,\Delta \tau,
+   \quad
+   v_{n+1}   = v_{n} + \tfrac{1}{2}\bigl(f_{v} + f_{v,\star}\bigr)\,\Delta \tau
+               + (\text{noiseAmp}) \, dW.
+   \]
 
-# predictor
-phi_star = phi_n + fphi_n*dt
-v_star   = v_n   + fv_n*dt + noiseAmp*dW
+## 3  Repository Overview
 
-# drift at predicted state
-fphi_star = v_star
-fv_star   = gammaDC + gammaAC*sin(Omega*(tau_n+dt)) - sin(phi_star) - (1/beta_c)*v_star
+- `rcsj_simulation.py`: main Python script that:
+  - Reads parameters \((R, C, T, I_{c}, f_{\mathrm{drive}}, \dots)\).
+  - Defines the dimensionless system, integrator steps, and noise amplitude formula.
+  - Runs a range of DC biases and ensemble runs, discarding transients and averaging final voltages.
+  - Plots \(\langle v \rangle / \Omega\) vs. \(\gamma_{\mathrm{DC}}\).
 
-# corrector
-phi[i+1] = phi_n + 0.5*(fphi_n + fphi_star)*dt
-v[i+1]   = v_n   + 0.5*(fv_n   + fv_star)*dt + noiseAmp*dW
-```
+- `requirements.txt`: typical dependencies (NumPy, Matplotlib, etc.).
 
-In the actual code, we also include the **(1 - frac_4pi) * sin(phi_n) + frac_4pi * sin(phi_n/2)** for partial \(4\pi\)-periodic conduction.
+- Optional: 
+  - `numba` for JIT compilation of the integrator function.
+  - `joblib` for parallel loops over ensemble runs.
+  - `tqdm` for a console progress bar.
 
-## 3. Implementation Overview
+## 4  Example Usage
 
-1. **Dependencies**  
-   - Python 3.7+  
-   - NumPy for arrays, math functions  
-   - Matplotlib for plotting  
-   - (Optional) [tqdm](https://github.com/tqdm/tqdm) for the progress bar  
-   - (Optional) [joblib](https://joblib.readthedocs.io/) for parallel runs  
-   - (Optional) [Numba](https://numba.pydata.org/) for JIT compilation of the integrator
-
-2. **Workflow**  
-   - We parse the physical parameters \((R, C, T, I_c, f_{\text{drive}})\).  
-   - Convert them to dimensionless forms \((\beta_c, \Omega, \dots)\).  
-   - For each DC bias current \(\gamma_{\mathrm{DC}}\) in a user‐provided range, run multiple “ensemble” realizations of the SDE with random noise, discard an initial transient, then average the final dimensionless voltage.  
-   - This yields an I–V curve that we can plot.
-
-3. **Parallelization**  
-   - If joblib is installed, we run each ensemble realization in parallel. Each run is independent because the random seeds differ.  
-   - If not installed, we fall back to a serial loop.
-
-4. **Numba Acceleration**  
-   - We define a function `rsj_heun_run_numba` (decorated with `@njit`) to do the time stepping. The loop is compiled to native code.  
-   - Gains can be large for bigger time spans or many ensemble runs.
-
-## 4. Usage
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/username/RCSJ_Simulation.git
-   cd RCSJ_Simulation
+1. Install Python 3.7+.
+2. Clone this repo and `cd` into it.
+3. (Optional) `pip install -r requirements.txt` or manually install `numpy, matplotlib, joblib, tqdm, numba`.
+4. Run:
    ```
-
-2. (Optional) Create a virtual environment and install dependencies:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate
-   pip install -r requirements.txt
-   ```
-
-3. Run the main script:
-   ```bash
    python rcsj_simulation.py
    ```
-   This will print out some parameters (e.g., \(\beta_c\), \(\omega_p\), \(\Omega\)) and produce an I–V plot as dimensionless voltage vs. DC current.
+   to see the dimensionless I–V curve and various printed parameter values.
 
-## 5. Explanation of Key Code Segments
-
-**`rsj_heun_run_numba(...)`**  
-Implements the Heun method in dimensionless time steps. Inside the loop:
-- `phi_n, v_n`: store current phase & voltage,
-- `dW = np.random.randn() * sqrt(dt)`: single normal increment for the step,
-- `fv_n`: drift function for voltage, capturing DC + AC + nonlinear sinusoidal conduction + resistor damping,
-- predictor/corrector pattern for `(phi, v)`.
-
-**`rcsj_iv_curve(...)`**  
-- Loops over multiple DC bias points \(\gamma_{\mathrm{DC}}\).  
-- At each DC bias, does `ensembleRuns` calls to `rsj_heun_run_numba`, storing final or steady average voltages.  
-- Updates the noise amplitude each time, based on the updated average voltage (like in the original RCSJ code).
-
-**Dimensionless Noise**  
-- The noise amplitude depends on \(\mathrm{coth}\bigl(\tfrac{e v_0}{2k_B T}\bigr)\). This is the Johnson–Nyquist plus shot noise approximation for a given average dimensionless voltage \(v_0\).
-
-## 6. Typical Results
-
-When running `rcsj_simulation.py`, you should see:
-- A textual progress bar (if tqdm is installed),
-- For each DC bias, a short message or updated bar about the simulation,
-- A final plot of \(\langle v\rangle / \Omega\) vs. \(\gamma_{\mathrm{DC}}\).  
-
-Shapiro steps or other interesting structures in the dimensionless voltage may appear, depending on the AC amplitude \(\gamma_{\mathrm{AC}}\), frequency \(\Omega\), and temperature‐derived noise strength.
-
-## 7. References
-
-- K. K. Likharev, \emph{Dynamics of Josephson Junctions and Circuits}, Gordon and Breach, 1986.  
-- R. F. Voss and R. A. Webb, \emph{Macroscopic Quantum Tunneling in Josephson Junctions}, Phys. Rev. Lett. 47, 265–268 (1981).  
-- P. Hanggi and F. Marchesoni, \emph{Artificial Brownian motors: Controlling transport on the nanoscale}, Rev. Mod. Phys. 81, 387–442 (2009).  
-- Rösler, Andreas. \emph{Runge–Kutta Methods for the Strong Approximation of Solutions of Stochastic Differential Equations}, SIAM J. Numer. Anal. 48, 3 (2010).  
+A typical output might show Shapiro steps if the AC amplitude is large enough, or purely monotonic curves if it is small.
 
 ---
 
-**We hope you find this code and documentation helpful in studying the stochastic RCSJ model.** Feel free to open Issues or Pull Requests to improve or extend the code with additional integrators, higher‐order methods, or more advanced noise modeling.
+**We hope this code and derivation help you explore the RCSJ system, including partial \( 4\pi \) conduction and thermal/shot noise.**  
