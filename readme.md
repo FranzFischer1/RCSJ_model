@@ -42,9 +42,9 @@ so that the circuit law becomes a system:
 
 $$\frac{d \phi}{d \tau} = v \qquad\frac{d v}{d \tau}= \gamma_{\mathrm{DC}} + \gamma_{\mathrm{AC}} \sin \!\bigl(\Omega \tau\bigr)- I_{\mathrm{JJ}}(\phi) - \frac{1}{\beta_{c}} v + \eta (\tau)$$
 
-Here, the junction current $I_{\mathrm{JJ}}(\phi)$ can be purely **$2 \pi$**‐periodic (the usual $\sin (\phi)$ ) or partially $4 \pi$–periodic:
+Here, the junction current $I_{\mathrm{JJ}}(\phi)$ can be purely **$2 \pi$**‐periodic (the usual $\sin (\phi)$ ) or partially $4 \pi$ –periodic:
 
-$$I_{\mathrm{JJ}}(\phi) = \bigl(1 - \text{frac\_4pi}\bigr)\,\sin\!\bigl(\phi\bigr)\;+\;\bigl(\text{frac\_4pi}\bigr)\sin\!\bigl(\tfrac{\phi}{2}\bigr).$$
+$$I_{\mathrm{JJ}}(\phi) = \bigl(1 - \text{frac\_4pi}\bigr)\,\sin\!\bigl(\phi\bigr)\;+\;\bigl(\text{frac\_4pi}\bigr)\sin\!\bigl(\tfrac{\phi}{2}\bigr)$$
 
 If `frac_4pi = 0`, we recover the standard $\sin(\phi)$. If `frac_4pi = 1`, we get $\sin(\phi/2)$, effectively doubling the period to $4 \pi$.
 
