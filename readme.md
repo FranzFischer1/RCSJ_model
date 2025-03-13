@@ -10,24 +10,24 @@ $$V(t) = \frac{\hbar}{2e} \frac{d\phi(t)}{dt},$$
 
 where $\phi(t)$ is the superconducting phase difference. By Kirchhoff’s Current Law, the circuit equation becomes:
 
-$$I_{\mathrm{bias}}(t)\;=\;I_{c}\,\sin\bigl(\phi(t)\bigr)\;+\;\frac{V(t)}{R}\;+\;C\,\frac{dV(t)}{dt}\;+\;I_{\mathrm{noise}}(t).$$
+$$I_{\mathrm{bias}}(t) = I_{c} \sin\bigl(\phi(t)\bigr) + \frac{V(t)}{R} + C \frac{dV(t)}{dt} + I_{\mathrm{noise}}(t).$$
 
 ### Thermal Noise: Johnson vs. Shot
 
 At temperature $T$, the resistor $R$ produces **Johnson–Nyquist** noise. Its low-frequency spectral density in the simplest linear regime is:
 
-$$S_{I}^\text{(Johnson)} = 4\,k_{B}\,T \,\frac{1}{R}, \quad(\text{A}^2/\text{Hz}),$$
+$$S_{I}^\text{(Johnson)} = 4 k_{B} T  \frac{1}{R}, \quad(\text{A}^2/\text{Hz}),$$
 
 where $k_B$ is the Boltzmann constant. However, at higher voltages $\lvert V\rvert$, the conduction can also exhibit **shot‐like** noise, approximated by:
 
-$$S_{I}^\text{(shot)}(V) = 2\,e\,\frac{\lvert V\rvert}{R}.$$
+$$S_{I}^\text{(shot)}(V) = 2 e \frac{\lvert V\rvert}{R}.$$
 
 A more **general** interpolation formula is:
 
-$$S_{I}(V)\;\approx\;2\,e\,\frac{\lvert V\rvert}{R}\,\coth\!\Bigl(\frac{e\,\lvert V\rvert}{2\,k_{B}\,T}\Bigr).$$
+$$S_{I}(V) \approx 2 e \frac{\lvert V\rvert}{R} \coth\!\Bigl(\frac{e \lvert V\rvert}{2 k_{B} T}\Bigr).$$
 
-- If $\tfrac{e\,\lvert V\rvert}{2\,k_{B}\,T} \ll 1$, $\coth(x)\approx\frac{1}{x}$, so $S_{I}(V)\approx 4\,k_B\,T\,(1/R)$ => **Johnson** regime.
-- If $\tfrac{e\,\lvert V\rvert}{2\,k_{B}\,T} \gg 1$, $\coth(x)\approx 1$, so $S_{I}(V)\approx 2\,e\,\lvert V\rvert/R$ => **shot** regime.
+- If $\tfrac{e \lvert V\rvert}{2 k_{B} T} \ll 1$, $\coth(x)\approx\frac{1}{x}$, so $S_{I}(V)\approx 4 k_B T (1/R)$ => **Johnson** regime.
+- If $\tfrac{e \lvert V\rvert}{2 k_{B} T} \gg 1$, $\coth(x)\approx 1$, so $S_{I}(V)\approx 2 e \lvert V\rvert/R$ => **shot** regime.
 
 Thus, for small voltages we recover Johnson noise, and for large voltages we approach shot noise.
 
@@ -35,11 +35,11 @@ Thus, for small voltages we recover Johnson noise, and for large voltages we app
 
 To eliminate physical constants, define:
 
-- $\omega_{p}=\sqrt{\tfrac{2\,e\,I_c}{\hbar\,C}}$: the **plasma frequency**,
-- $\tau=\omega_{p}\,t$: a dimensionless time,
-- $\gamma_{\mathrm{DC}}=\tfrac{I_{\mathrm{DC}}}{I_{c}},\;\;\gamma_{\mathrm{AC}}=\tfrac{I_{\mathrm{AC}}}{I_{c}}$: normalized DC/AC drives,
+- $\omega_{p}=\sqrt{\tfrac{2 e I_c}{\hbar C}}$: the **plasma frequency**,
+- $\tau=\omega_{p} t$: a dimensionless time,
+- $\gamma_{\mathrm{DC}}=\tfrac{I_{\mathrm{DC}}}{I_{c}},  \gamma_{\mathrm{AC}}=\tfrac{I_{\mathrm{AC}}}{I_{c}}$: normalized DC/AC drives,
 - $\Omega=\tfrac{\omega_{\mathrm{drive}}}{\omega_p}$: dimensionless AC frequency,
-- $\beta_{c} = \omega_{p}\,R\,C$: the **Stewart–McCumber** parameter.
+- $\beta_{c} = \omega_{p} R C$: the **Stewart–McCumber** parameter.
 
 Let $\phi(\tau)$ be the dimensionless phase, and define
 
@@ -47,11 +47,11 @@ $$v(\tau)=\frac{d\phi(\tau)}{d\tau}.$$
 
 We can rewrite the circuit law as:
 
-$$\frac{d\phi}{d\tau}=v,\quad\frac{dv}{d\tau}=\gamma_{\mathrm{DC}}+\gamma_{\mathrm{AC}}\sin(\Omega\,\tau)\;-\;I_{\mathrm{JJ}}(\phi)\;-\;\frac{v}{\beta_{c}}\;+\;\eta(\tau).$$
+$$\frac{d\phi}{d\tau}=v,\quad\frac{dv}{d\tau}=\gamma_{\mathrm{DC}}+\gamma_{\mathrm{AC}}\sin(\Omega \tau) - I_{\mathrm{JJ}}(\phi) - \frac{v}{\beta_{c}} + \eta(\tau).$$
 
 Here, the junction current $I_{\mathrm{JJ}}(\phi)$ can be partially or wholly $4\pi$-periodic:
 
-$$I_{\mathrm{JJ}}(\phi)\;=\;\bigl(1-\text{frac4pi}\bigr)\,\sin(\phi)\;+\;\bigl(\text{frac4pi}\bigr)\,\sin\!\bigl(\tfrac{\phi}{2}\bigr).$$
+$$I_{\mathrm{JJ}}(\phi) = \bigl(1-\text{frac4pi}\bigr) \sin(\phi) + \bigl(\text{frac4pi}\bigr) \sin\!\bigl(\tfrac{\phi}{2}\bigr).$$
 
 - If `frac4pi=0`, we recover the usual $2\pi$-periodic $\sin(\phi)$.
 - If `frac4pi=1`, we get $\sin(\phi/2)$, doubling the period to $4\pi$.
@@ -60,11 +60,11 @@ $$I_{\mathrm{JJ}}(\phi)\;=\;\bigl(1-\text{frac4pi}\bigr)\,\sin(\phi)\;+\;\bigl(\
 
 The random forcing $\eta(\tau)$ models the resistor’s thermal (or shot) noise in dimensionless form. Suppose its amplitude depends on the junction’s average dimensionless voltage $v_{0}$. Then:
 
-$$\eta(\tau)\approx\text{noiseAmp}\times\mathcal{N}(0,1)\,\sqrt{d\tau},$$
+$$\eta(\tau)\approx\text{noiseAmp}\times\mathcal{N}(0,1) \sqrt{d\tau},$$
 
 where
 
-$$S_{I}\approx2\,e\,\frac{v_{0}}{R}\,\coth\!\Bigl(\frac{e\,v_{0}}{2\,k_{B}\,T}\Bigr)\quad\Longrightarrow\quad\text{noiseAmp}=\sqrt{\frac{2\,S_{I}}{I_{c}^{2}\,\omega_{p}\,\Delta\tau}}.$$
+$$S_{I}\approx2 e \frac{v_{0}}{R} \coth\!\Bigl(\frac{e v_{0}}{2 k_{B} T}\Bigr)\quad\Longrightarrow\quad\text{noiseAmp}=\sqrt{\frac{2 S_{I}}{I_{c}^{2} \omega_{p} \Delta\tau}}.$$
 
 In each time step, we compute the final/average dimensionless voltage $v_{0}$, then use it to update `noiseAmp`. This ensures the noise transitions smoothly between Johnson or shot regimes depending on the operating point of the junction.
 
@@ -72,14 +72,14 @@ In each time step, we compute the final/average dimensionless voltage $v_{0}$, t
 
 We simulate over dimensionless timesteps $\Delta\tau$. In each step:
 
-Known $\phi_{n},v_{n}$. Generate standard normal $\xi$. Let $dW=\xi\,\sqrt{\Delta\tau}$.
+Known $\phi_{n},v_{n}$. Generate standard normal $\xi$. Let $dW=\xi \sqrt{\Delta\tau}$.
 Drift at old state:
 
-   $$f_{\phi}=v_{n},\quad f_{v}=\gamma_{\mathrm{DC}}+\gamma_{\mathrm{AC}}\sin(\Omega\,\tau_{n})-I_{\mathrm{JJ}}(\phi_{n})-\tfrac{v_{n}}{\beta_{c}}.$$
+   $$f_{\phi}=v_{n},\quad f_{v}=\gamma_{\mathrm{DC}}+\gamma_{\mathrm{AC}}\sin(\Omega \tau_{n})-I_{\mathrm{JJ}}(\phi_{n})-\tfrac{v_{n}}{\beta_{c}}.$$
 
 **Predictor** (Euler step):
    
-   $$\phi_{\star}=\phi_{n}+f_{\phi}\,\Delta\tau,\quad v_{\star}=v_{n}+f_{v}\,\Delta\tau+(\text{noiseAmp})\,dW.$$
+   $$\phi_{\star}=\phi_{n}+f_{\phi} \Delta\tau,\quad v_{\star}=v_{n}+f_{v} \Delta\tau+(\text{noiseAmp}) dW.$$
 
 Evaluate drift at predicted state:
 
@@ -87,7 +87,7 @@ Evaluate drift at predicted state:
 
  **Corrector**:
 
-   $$\phi_{n+1}=\phi_{n}+\tfrac12\bigl(f_{\phi}+f_{\phi,\star}\bigr)\Delta\tau,\quad v_{n+1}=v_{n}+\tfrac12\bigl(f_{v}+f_{v,\star}\bigr)\Delta\tau+(\text{noiseAmp})\,dW.$$
+   $$\phi_{n+1}=\phi_{n}+\tfrac12\bigl(f_{\phi}+f_{\phi,\star}\bigr)\Delta\tau,\quad v_{n+1}=v_{n}+\tfrac12\bigl(f_{v}+f_{v,\star}\bigr)\Delta\tau+(\text{noiseAmp}) dW.$$
 
 ## Voltage Transient and Why We Take the Mean
 
