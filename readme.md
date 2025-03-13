@@ -65,7 +65,7 @@ We solve the system in dimensionless time steps $\Delta \tau$. In each step:
 1. $\phi_{n}, v_{n}$ are known. Generate a standard normal $\xi$ and let $dW = \xi \sqrt{\Delta \tau}$.
 2. Drift at old state:
    
-   $$f_{\phi} = v_{n}, \quadf_{v} = \gamma_{\mathrm{DC}} + \gamma_{\mathrm{AC}}\sin (\Omega\, \tau_{n})- I_{\mathrm{JJ}}(\phi_{n})- \tfrac{1}{\beta_{c}} v_{n}.$$
+   $$f_{\phi} = v_{n}, \quad f_{v} = \gamma_{\mathrm{DC}} + \gamma_{\mathrm{AC}}\sin (\Omega\, \tau_{n})- I_{\mathrm{JJ}}(\phi_{n})- \tfrac{1}{\beta_{c}} v_{n}.$$
    
 4. **Predictor** (Euler):
    
