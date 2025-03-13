@@ -1,6 +1,6 @@
 # RCSJ Simulation in Python
 
-This repository provides a Python implementation of a **Resistively and Capacitively Shunted Josephson Junction (RCSJ)** model, including a thermal noise source from the shunt resistor, an RF source and an optional $4\pi$-periodic current-phase relation. The code integrates a **stochastic differential equation** (SDE) for the junction’s phase using a Heun‐type (explicit trapezoidal) method in dimensionless form. All  physical parameters for the JJ can be chosen. The scripts are subdivided in 4 parts: Functions, Parameters, Execution, Plotting. Just change the parameters section, if you just want to use it. If you want to compute shapiro maps or several IV-curves, write a for-loop around the execution line.
+This repository provides a Python implementation of a **Resistively and Capacitively Shunted Josephson Junction (RCSJ)** model, including a thermal noise source from the shunt resistor, an RF source and an optional $4\pi$-periodic current-phase relation. The code integrates a **stochastic differential equation** (SDE) for the junction’s phase using a Heun‐type (explicit trapezoidal) method in dimensionless form. The current is set and the voltage is calculated for each current bias. All  physical parameters for the JJ can be chosen. The scripts are subdivided in 4 parts: Functions, Parameters, Execution, Plotting. Just change the parameters section, if you just want to use it. If you want to compute shapiro maps or several IV-curves, write a for-loop around the execution line.
 
 ## Physical Model and Noise Derivation
 
@@ -80,9 +80,10 @@ When the system starts from some initial condition (e.g. $\phi=0$, $v=0$), there
 
 ## Heun Integrator in Python
 
+A Heun Integration is a 2 step euler integration with a random term in the integral. The current is set and the voltage is calculated for each current bias. 
 We simulate over dimensionless timesteps $\Delta\tau$. In each step:
 
-Known $\phi_{n},v_{n}$. Generate standard normal $\xi$. Let $dW=\xi \sqrt{\Delta\tau}$.
+We have initial conditions $\phi_{n},v_{n}$. We generate a random number with standard normal distribution $\mathcal{N}(0,1)=\xi$. Let $dW=\xi \sqrt{\Delta\tau}$.
 Drift at old state:
 
    $$f_{\phi}=v_{n},\quad f_{v}=\gamma_{\mathrm{DC}}+\gamma_{\mathrm{AC}}\sin(\Omega \tau_{n})-I_{\mathrm{JJ}}(\phi_{n})-\tfrac{v_{n}}{\beta_{c}}.$$
@@ -97,6 +98,8 @@ Evaluate drift at predicted state:
 
  **Corrector**:
 
-   $$\phi_{n+1}=\phi_{n}+\tfrac12\bigl(f_{\phi}+f_{\phi,\star}\bigr)\Delta\tau,\quad v_{n+1}=v_{n}+\tfrac12\bigl(f_{v}+f_{v,\star}\bigr)\Delta\tau+(\text{noiseAmp}) dW.$$
+   $$\phi_{n+1}=\phi_{n}+\tfrac12\bigl(f_{\phi}+f_{\phi\star}\bigr)\Delta\tau,\quad v_{n+1}=v_{n}+\tfrac12\bigl(f_{v}+f_{v\star}\bigr)\Delta\tau+(\text{noiseAmp}) dW.$$
+
+These steps are repeated with the specified d$\tau$ increment and the total integration time specified in multiples of the plasma oscillation period. As described above, the transient is discarded after that. The mean of the non-discarded voltage will be saved as the DC voltage for the IV-curve. The current is set and the voltage is calculated for each current bias. For the first point, the initial conditions for both phase and voltage are 0. The voltage from the previous current bias will be the initial condition for the next current bias. Because the phase is oscillating anyway, the initial condition is always 0 for the phase.
 
 
