@@ -12,7 +12,7 @@ $$I_{\mathrm{bias}} (t)
 = I_{c} \sin \bigl(\phi (t)\bigr)
 + \frac{V (t)}{R}
 + C \frac{d V (t)}{d t}
-+ I_{\mathrm{noise}} (t).$$
++ I_{\mathrm{noise}} (t)$$
 
 ### 1.1  Thermal Noise Formula
 
