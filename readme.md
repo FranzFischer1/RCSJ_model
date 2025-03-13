@@ -12,6 +12,31 @@ where $\phi(t)$ is the superconducting phase difference. By Kirchhoff’s Curren
 
 $$I_{\mathrm{bias}}(t) = I_{c} \sin\bigl(\phi(t)\bigr) + \frac{V(t)}{R} + C \frac{dV(t)}{dt} + I_{\mathrm{noise}}(t).$$
 
+### Dimensionless RCSJ Equation
+
+To eliminate physical constants, define:
+
+- $\omega_{p}=\sqrt{\tfrac{2 e I_c}{\hbar C}}$: the **plasma frequency**,
+- $\tau=\omega_{p} t$: a dimensionless time,
+- $\gamma_{\mathrm{DC}}=\tfrac{I_{\mathrm{DC}}}{I_{c}},  \gamma_{\mathrm{AC}}=\tfrac{I_{\mathrm{AC}}}{I_{c}}$: normalized DC/AC drives,
+- $\Omega=\tfrac{\omega_{\mathrm{drive}}}{\omega_p}$: dimensionless AC frequency,
+- $\beta_{c} = \omega_{p} R C$: the **Stewart–McCumber** parameter.
+
+Let $\phi(\tau)$ be the dimensionless phase, and define
+
+$$v(\tau)=\frac{d\phi(\tau)}{d\tau}.$$
+
+We can rewrite the circuit law as:
+
+$$\frac{d\phi}{d\tau}=v,\quad\frac{dv}{d\tau}=\gamma_{\mathrm{DC}}+\gamma_{\mathrm{AC}}\sin(\Omega \tau) - I_{\mathrm{JJ}}(\phi) - \frac{v}{\beta_{c}} + \eta(\tau).$$
+
+Here, the junction current $I_{\mathrm{JJ}}(\phi)$ can be partially or wholly $4\pi$-periodic:
+
+$$I_{\mathrm{JJ}}(\phi) = \bigl(1-\text{frac4pi}\bigr) \sin(\phi) + \bigl(\text{frac4pi}\bigr) \sin\!\bigl(\tfrac{\phi}{2}\bigr).$$
+
+- If `frac4pi=0`, we recover the usual $2\pi$-periodic $\sin(\phi)$.
+- If `frac4pi=1`, we get $\sin(\phi/2)$, doubling the period to $4\pi$.
+
 ### Thermal Noise: Johnson vs. Shot
 
 At temperature $T$, the resistor $R$ produces **Johnson–Nyquist** noise. Its low-frequency spectral density in the simplest linear regime is:
@@ -43,30 +68,6 @@ In each time step, we compute the final/average dimensionless voltage $v_{0}$, t
 
 The noise term $\eta(\tau)$ is represented mathematically as a white noise, often interpreted in the language of Ito or Stratonovich integrals. Numerically, we approximate it as random increments of a Wiener process $W(\tau)$, so that $\eta(\tau),d\tau \approx \sqrt{\Delta\tau},\mathcal{N}(0,1)$ each step. In practice, we call a random number generator to obtain normal deviates. This process ensures physically consistent fluctuations of the junction current/voltage over time.
 
-### Dimensionless RCSJ Equation
-
-To eliminate physical constants, define:
-
-- $\omega_{p}=\sqrt{\tfrac{2 e I_c}{\hbar C}}$: the **plasma frequency**,
-- $\tau=\omega_{p} t$: a dimensionless time,
-- $\gamma_{\mathrm{DC}}=\tfrac{I_{\mathrm{DC}}}{I_{c}},  \gamma_{\mathrm{AC}}=\tfrac{I_{\mathrm{AC}}}{I_{c}}$: normalized DC/AC drives,
-- $\Omega=\tfrac{\omega_{\mathrm{drive}}}{\omega_p}$: dimensionless AC frequency,
-- $\beta_{c} = \omega_{p} R C$: the **Stewart–McCumber** parameter.
-
-Let $\phi(\tau)$ be the dimensionless phase, and define
-
-$$v(\tau)=\frac{d\phi(\tau)}{d\tau}.$$
-
-We can rewrite the circuit law as:
-
-$$\frac{d\phi}{d\tau}=v,\quad\frac{dv}{d\tau}=\gamma_{\mathrm{DC}}+\gamma_{\mathrm{AC}}\sin(\Omega \tau) - I_{\mathrm{JJ}}(\phi) - \frac{v}{\beta_{c}} + \eta(\tau).$$
-
-Here, the junction current $I_{\mathrm{JJ}}(\phi)$ can be partially or wholly $4\pi$-periodic:
-
-$$I_{\mathrm{JJ}}(\phi) = \bigl(1-\text{frac4pi}\bigr) \sin(\phi) + \bigl(\text{frac4pi}\bigr) \sin\!\bigl(\tfrac{\phi}{2}\bigr).$$
-
-- If `frac4pi=0`, we recover the usual $2\pi$-periodic $\sin(\phi)$.
-- If `frac4pi=1`, we get $\sin(\phi/2)$, doubling the period to $4\pi$.
 
 ## Voltage Transient
 
