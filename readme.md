@@ -66,7 +66,7 @@ $$I_{\mathrm{JJ}}(\phi) = \bigl(1-\text{frac4pi}\bigr) \sin(\phi) + \bigl(\text{
 - If `frac4pi=0`, we recover the usual $2\pi$-periodic $\sin(\phi)$.
 - If `frac4pi=1`, we get $\sin(\phi/2)$, doubling the period to $4\pi$.
 
-## Voltage Transient and Why We Take the Mean
+## Voltage Transient
 
 When the system starts from some initial condition (e.g. $\phi=0$, $v=0$), there is often a **transient** phase where the junction’s voltage quickly evolves from this initial state to a more statistically stationary regime. In practice, we:
 
