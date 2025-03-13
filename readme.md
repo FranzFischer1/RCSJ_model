@@ -5,29 +5,25 @@ This repository provides a Python implementation of a **Resistively and Capaciti
 ## 1  Physical Model and Noise Derivation
 
 Consider a Josephson junction with critical current $I_{c}$. It is placed in parallel with a resistor $R$ and a capacitor $C$, all driven by a current $I_{\mathrm{bias}}(t)$. The voltage across the junction is  
-$$V (t) = \frac{\hbar}{2 e}$$
-
-$$\frac{d \phi (t)}{d t}$$
+$$V (t) = \frac{\hbar}{2 e}\frac{d \phi (t)}{d t}$$
 
 where $\phi (t)$ is the superconducting phase difference. By Kirchhoff’s Current Law, the circuit equation becomes  
-$$
-I_{\mathrm{bias}} (t)
+$$I_{\mathrm{bias}} (t)
 = I_{c} \sin \bigl(\phi (t)\bigr)
 + \frac{V (t)}{R}
 + C \, \frac{d V (t)}{d t}
-+ I_{\mathrm{noise}} (t).
-$$
++ I_{\mathrm{noise}} (t).$$
 
 ### 1.1  Thermal Noise Formula
 
 The resistor $R$ at temperature $T$ generates **Johnson–Nyquist noise** with a spectral density  
-$$
-S_{I} = 4 k_{B} T \, \frac{1}{R} \quad (\text{A}^2/\text{Hz}),
-$$
+
+$$S_{I} = 4 k_{B} T \, \frac{1}{R} \quad (\text{A}^2/\text{Hz}),$$
+
 where $k_{B}$ is Boltzmann’s constant. If additional shot noise or more advanced corrections apply, one may write a more general formula such as  
-$$
-S_{I} (V ) \approx 2 e \, \frac{\lvert V \rvert}{R} \, \coth \!\Bigl(\frac{e\,\lvert V \rvert}{2 k_{B} T}\Bigr) ,
-$$
+
+$$S_{I} (V ) \approx 2 e \, \frac{\lvert V \rvert}{R} \, \coth \!\Bigl(\frac{e\,\lvert V \rvert}{2 k_{B} T}\Bigr) ,$$
+
 which **interpolates** between a linear Johnson regime at small $V$ and shot‐like behavior at large $V$. In dimensionless form, we factor out $I_{c}$ and the typical voltage scale.
 
 ### 1.2  Dimensionless RCSJ Equation
