@@ -44,7 +44,7 @@ $$\frac{d \phi}{d \tau} = v \qquad\frac{d v}{d \tau}= \gamma_{\mathrm{DC}} + \ga
 
 Here, the junction current $I_{\mathrm{JJ}}(\phi)$ can be purely **$2 \pi$**‐periodic (the usual $\sin (\phi)$ ) or partially $4 \pi$ –periodic:
 
-$$I_{\mathrm{JJ}}(\phi) = \bigl(1 - \text{frac_4pi}\bigr)\sin \bigl(\phi\bigr)+\bigl(\text{frac_4pi}\bigr)\sin\bigl(\tfrac{\phi}{2}\bigr)$$
+$$I_{\mathrm{JJ}}(\phi) = \bigl(1 - \text{frac4pi}\bigr)\sin \bigl(\phi\bigr)+\bigl(\text{frac4pi}\bigr)\sin\bigl(\tfrac{\phi}{2}\bigr)$$
 
 If `frac_4pi = 0`, we recover the standard $\sin(\phi)$. If `frac_4pi = 1`, we get $\sin(\phi/2)$, effectively doubling the period to $4 \pi$.
 
