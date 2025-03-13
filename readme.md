@@ -31,7 +31,9 @@ $$S_{I}(V) \approx 2 e \frac{\lvert V\rvert}{R} \coth\!\Bigl(\frac{e \lvert V\rv
 
 Thus, for small voltages we recover Johnson noise, and for large voltages we approach shot noise.
 
-The random forcing $\eta(\tau)$ models the resistor’s thermal (or shot) noise in dimensionless form. Suppose its amplitude depends on the junction’s average dimensionless voltage $v_{0}$. Then:
+The noise term $\eta(\tau)$ is represented mathematically as a white noise, often interpreted in the language of Ito or Stratonovich integrals. Numerically, we approximate it as random increments of a Wiener process $W(\tau)$, so that $\eta(\tau),d\tau \approx \sqrt{\Delta\tau},\mathcal{N}(0,1)$ each step. In practice, we call a random number generator to obtain normal deviates. This process ensures physically consistent fluctuations of the junction current/voltage over time.
+
+The random increment $\eta(\tau)$ models the resistor’s thermal (or shot) noise in dimensionless form. Suppose its amplitude depends on the junction’s average dimensionless voltage $v_{0}$. Then:
 
 $$\eta(\tau)\approx\text{noiseAmp}\times\mathcal{N}(0,1) \sqrt{d\tau},$$
 
