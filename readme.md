@@ -18,7 +18,9 @@ To eliminate physical constants, define:
 
 - $\omega_{p}=\sqrt{\tfrac{2 e I_c}{\hbar C}}$: the **plasma frequency**,
 - $\tau=\omega_{p} t$: a dimensionless time,
-- $\gamma_{\mathrm{DC}}=\tfrac{I_{\mathrm{DC}}}{I_{c}},  \gamma_{\mathrm{AC}}=\tfrac{I_{\mathrm{AC}}}{I_{c}}$: normalized DC/AC drives,
+- $\gamma_{\mathrm{DC}}=\tfrac{I_{\mathrm{DC}}}{I_{c}}$: normalized DC current,
+- $\gamma_{\mathrm{AC}}=\tfrac{I_{\mathrm{AC}}}{I_{c}}$: normalized AC drive current,
+- $\eta(\tau)=\tfrac{I_{\mathrm{noise}}(t)}{I_{c}}$: normalized noise current,
 - $\Omega=\tfrac{\omega_{\mathrm{drive}}}{\omega_p}$: dimensionless AC frequency,
 - $\beta_{c} = \omega_{p} R C$: the **Stewart–McCumber** parameter.
 
