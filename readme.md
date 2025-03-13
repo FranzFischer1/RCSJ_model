@@ -1,14 +1,10 @@
-Below is a **sample README** that provides a detailed derivation and explanation of an RCSJ (Resistively and Capacitively Shunted Josephson Junction) simulation in Python. You can adapt its structure and content as needed for your GitHub project.
-
----
-
 # RCSJ Simulation in Python
 
-This repository contains a Python implementation of the **RCSJ (Resistively and Capacitively Shunted Josephson Junction)** model, including thermal noise and an optional AC drive. The simulation demonstrates how to numerically integrate the stochastic differential equation (SDE) for the junction's phase over time, using a Heun‐type (explicit trapezoidal) stochastic integrator. Optionally, it uses [Numba](https://numba.pydata.org/) to JIT-compile the core integration loop for speed.
+This repository contains a Python implementation of the **RCSJ (Resistively and Capacitively Shunted Josephson Junction)** model, including thermal noise and an optional AC drive. The simulation demonstrates how to numerically integrate the stochastic differential equation (SDE) for the junction's phase over time, using a Heun‐type (explicit trapezoidal) stochastic integrator. It uses Numba to JIT-compile the core integration loop for speed.
 
 ## 1. Introduction and Background
 
-A Josephson junction can be idealized by two superconducting electrodes, separated by a thin insulating barrier that permits tunneling of Cooper pairs. In the **RCSJ model**, a junction of critical current \(I_c\) is shunted by a resistor \(R\) and a capacitor \(C\), all in parallel. An external current \(I_{\text{bias}}(t)\) drives the circuit, which may include both DC and AC components. Additionally, **thermal noise** from the resistor is modeled as a stochastic term coupling to the junction’s voltage. 
+A Josephson junction can be idealized by two superconducting electrodes, separated by a thin insulating or normal conducting barrier that permits tunneling of Cooper pairs. In the **RCSJ model**, a junction of critical current \(I_c\) is shunted by a resistor \(R\) and a capacitor \(C\), all in parallel. An external current \(I_{\text{bias}}(t)\) drives the circuit, which may include both DC and AC components. Additionally, **thermal noise** from the resistor is modeled as a stochastic term coupling to the junction’s voltage. 
 
 ### 1.1 Physical Equation
 
