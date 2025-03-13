@@ -1,80 +1,106 @@
 # RCSJ Simulation in Python
 
-This repository provides a Python implementation of a **Resistively and Capacitively Shunted Josephson Junction (RCSJ)** model, including a thermal noise source from the shunt resistor and an optional $4\pi$-periodic current-phase relation. The code integrates a **stochastic differential equation** (SDE) for the junction’s phase, using a Heun‐type (explicit trapezoidal) method in dimensionless form.
+This repository provides a Python implementation of a **Resistively and Capacitively Shunted Josephson Junction (RCSJ)** model. It accounts for thermal/shot noise from the shunt resistor, optionally includes a partially \(4\pi\)-periodic current-phase relation, and numerically integrates the resulting **stochastic differential equation (SDE)** for the junction’s phase using a Heun‐type (explicit trapezoidal) method in dimensionless form.
 
 ## 1  Physical Model and Noise Derivation
 
-Consider a Josephson junction with critical current $I_{c}$. It is placed in parallel with a resistor $R$ and a capacitor $C$, all driven by a current $I_{\mathrm{bias}}(t)$. The voltage across the junction is 
+Consider a Josephson junction with critical current \$I_c\$. The junction is placed in parallel with a resistor \$R\$ and a capacitor \$C\$, all driven by a bias current \$I_{\mathrm{bias}}(t)\$. The voltage across the junction is 
+\[
+V(t) = \frac{\hbar}{2e}\,\frac{d\phi(t)}{dt},
+\]
+where \$\phi(t)\$ is the superconducting phase difference. By Kirchhoff’s Current Law, we have
+\[
+I_{\mathrm{bias}}(t)
+= I_c \,\sin\bigl(\phi(t)\bigr)\;+\;\frac{V(t)}{R}\;+\;C\,\frac{dV(t)}{dt}\;+\;I_{\mathrm{noise}}(t).
+\]
 
-$$V (t) = \frac{\hbar}{2 e}\frac{d \phi (t)}{d t}$$
+### 1.1  Noise Formula and Limits
 
-where $\phi (t)$ is the superconducting phase difference. By Kirchhoff’s Current Law, the circuit equation becomes  
+The resistor \$R\$ at temperature \$T\$ typically generates **Johnson–Nyquist noise** with a low-frequency spectral density 
+\[
+S_I \;=\; 4\,k_B\,T\,\frac{1}{R}\quad(\text{A}^2/\text{Hz}),
+\]
+where \$k_B\$ is Boltzmann’s constant. However, when the junction’s voltage becomes large, **shot noise** may dominate. A common interpolation formula is:
+\[
+S_I(V)\;\approx\;2\,e\,\frac{|V|}{R}\;\coth\!\Bigl(\frac{e\,|V|}{2\,k_B\,T}\Bigr).
+\]
+- **Johnson‐like limit**: for small \$|V|\$, \$e|V|\ll k_B T\$, we have \$\coth(x)\approx 1/x\$ so
+\[
+S_I(V)\;\to\;4\,k_B\,T\,\frac{1}{R}\quad\text{(Johnson noise)}.
+\]
+- **Shot‐like limit**: for large \$|V|\$, \$e|V|\gg k_B T\$, \$\coth(x)\approx 1\$, so
+\[
+S_I(V)\;\to\;2\,e\,\frac{|V|}{R}\quad\text{(shot noise)}.
+\]
 
-$$I_{\mathrm{bias}} (t)= I_{c} \sin \bigl(\phi (t)\bigr)+ \frac{V (t)}{R}+ C \frac{d V (t)}{d t}+ I_{\mathrm{noise}} (t)$$
-
-### 1.1  Thermal Noise Formula
-
-The resistor $R$ at temperature $T$ generates **Johnson–Nyquist noise** with a spectral density  
-
-$$S_{I} = 4 k_{B} T \frac{1}{R} \quad (\text{A}^2/\text{Hz})$$
-
-where $k_{B}$ is Boltzmann’s constant. If additional shot noise or more advanced corrections apply, one may write a more general formula such as  
-
-$$S_{I} (V) \approx 2 e \frac{\lvert V \rvert}{R} \coth \Bigl(\frac{e \lvert V \rvert}{2 k_{B} T}\Bigr)$$
-
-which **interpolates** between a linear Johnson regime at small $V$ and shot‐like behavior at large $V$. In dimensionless form, we factor out $I_{c}$ and the typical voltage scale.
+In our simulation, we often define a dimensionless amplitude \(\text{noiseAmp}\) from \$S_I(V)\$ after scaling out \$I_c\$ and the plasma frequency, so the random forcing \$I_{\mathrm{noise}}(t)\$ is effectively 
+\[
+\text{noiseAmp}\times\mathcal{N}(0,1)\times\sqrt{\Delta \tau}\quad\text{in dimensionless units.}
+\]
 
 ### 1.2  Dimensionless RCSJ Equation
 
-To eliminate physical constants, define:
+We eliminate physical constants by defining:
+- \$\omega_p = \sqrt{\tfrac{2\,e\,I_c}{\hbar\,C}}\$: the **plasma frequency**,
+- \$\tau = \omega_p\,t\$: a dimensionless time,
+- \$\gamma_{\mathrm{DC}} = \tfrac{I_{\mathrm{DC}}}{I_c}\$, \$\gamma_{\mathrm{AC}} = \tfrac{I_{\mathrm{AC}}}{I_c}\$: normalized DC/AC currents,
+- \$\Omega = \tfrac{\omega_{\mathrm{drive}}}{\omega_p}\$: dimensionless AC drive frequency,
+- \$\beta_c = \omega_p\,R\,C\$: the **Stewart–McCumber** parameter.
 
-- $\omega_{p} = \sqrt{\dfrac{2 e I_{c}}{\hbar C}}$ : the **plasma frequency**,
-- $\tau = \omega_{p} t$ : a dimensionless time,
-- $\gamma_{\mathrm{DC}} = \dfrac{I_{\mathrm{DC}}}{I_{c}}$ , $\gamma_{\mathrm{AC}} = \dfrac{I_{\mathrm{AC}}}{I_{c}}$ : normalized DC/AC drives,
-- $\Omega = \dfrac{\omega_{\mathrm{drive}}}{\omega_{p}}$ : dimensionless AC frequency,
-- $\beta_{c} = \omega_{p} \, R \, C$ : the Stewart–McCumber parameter.
+Let \$\phi(\tau)\$ be the dimensionless phase, and define
+\[
+v(\tau)\;=\;\frac{d\phi(\tau)}{d\tau}.
+\]
+Then the circuit equation becomes:
 
-Then, letting $\phi (\tau)$ be the dimensionless phase, define  
+\[
+\frac{d\phi}{d\tau}\;=\;v,\quad
+\frac{dv}{d\tau}
+\;=\;\gamma_{\mathrm{DC}}
++\gamma_{\mathrm{AC}}\sin\bigl(\Omega\,\tau\bigr)
+-\,I_{\mathrm{JJ}}(\phi)
+-\,\frac{v}{\beta_c}
++\,\eta(\tau),
+\]
+where \$\eta(\tau)\$ is the dimensionless random forcing from the resistor noise. If the junction has a mixture of \$2\pi\$ and \$4\pi\$ periodic current-phase relations, we can define
+\[
+I_{\mathrm{JJ}}(\phi)
+\;=\;(1-\text{frac4pi})\,\sin(\phi)\;+\;\text{frac4pi}\,\sin\!\Bigl(\tfrac{\phi}{2}\Bigr).
+\]
+Setting \`frac4pi = 0\` recovers the standard \$2\pi\$ conduction (\$\sin(\phi)\$), while \`frac4pi = 1\` leads to \$\sin(\phi/2)\$, effectively doubling the period to \$4\pi\$.
 
-$$v (\tau) = \frac{d \phi (\tau)}{d \tau}$$
+### 1.3  Voltage Transient and Ensemble Mean
 
-so that the circuit law becomes a system:
-
-$$\frac{d \phi}{d \tau} = v \qquad\frac{d v}{d \tau}= \gamma_{\mathrm{DC}} + \gamma_{\mathrm{AC}} \sin \!\bigl(\Omega \tau\bigr)- I_{\mathrm{JJ}}(\phi) - \frac{1}{\beta_{c}} v + \eta (\tau)$$
-
-Here, the junction current $I_{\mathrm{JJ}}(\phi)$ can be purely **$2 \pi$**‐periodic (the usual $\sin (\phi)$ ) or partially $4 \pi$ –periodic:
-
-$$I_{\mathrm{JJ}}(\phi) = \bigl(1 - \text{frac4pi}\bigr)\sin \bigl(\phi\bigr)+\bigl(\text{frac4pi}\bigr)\sin\bigl(\tfrac{\phi}{2}\bigr)$$
-
-If `frac_4pi = 0`, we recover the standard $\sin(\phi)$. If `frac_4pi = 1`, we get $\sin(\phi/2)$, effectively doubling the period to $4 \pi$.
-
-### 1.3  Adding the Noise
-
-The random forcing $\eta (\tau)$ stems from the resistor’s thermal noise in dimensionless form. Suppose the amplitude depends on the average voltage, say
-
-$$\eta (\tau) \approx \text{noiseAmp} \times \mathcal{N}(0,1)\,\sqrt{d\tau}$$
-
-We can update `noiseAmp` each time if the system’s average dimensionless voltage $v_{0}$ changes significantly, e.g. from the interpolation formula
-
-$$S_{I} \approx 2 e \frac{v_{0}}{R}\coth \!\Bigl(\frac{e v_{0}}{2 k_{B} T}\Bigr)\quad\text{noiseAmp} = \sqrt{\frac{2 S_{I}}{I_{c}^{2} \omega_{p}\Delta \tau}}$$
+When we switch on a particular DC bias or noise amplitude, the dimensionless voltage \$v(\tau)\$ often undergoes a transient phase in which it moves from some initial condition to a quasi‐stationary state or a phase‐locked region. **We discard** an initial fraction of the simulation — e.g. the first \$30\%\$ or \$50\%\$ of time steps — to remove that transient. Then we average the final portion of \$v(\tau)\$ over time to get a representative “steady‐state” dimensionless voltage, or we run many “ensemble” simulations with different random seeds and compute the final time average. This yields the \emph{mean} dimensionless voltage for each DC bias setting, enabling an I–V (or \(\gamma_{\mathrm{DC}}\)–\(\langle v\rangle\)) curve that reflects the typical junction behavior.
 
 ## 2  Heun Integrator in Python
 
-We solve the system in dimensionless time steps $\Delta \tau$. In each step:
+We solve the dimensionless SDE with time step \$\Delta\tau\$. For each step from \(\tau_n\) to \(\tau_{n+1}\):
 
-1. $\phi_{n}, v_{n}$ are known. Generate a standard normal $\xi$ and let $dW = \xi \sqrt{\Delta \tau}$.
-2. Drift at old state:
-   
-   $$f_{\phi} = v_{n}, \quad f_{v} = \gamma_{\mathrm{DC}} + \gamma_{\mathrm{AC}}\sin (\Omega\, \tau_{n})- I_{\mathrm{JJ}}(\phi_{n})- \tfrac{1}{\beta_{c}} v_{n}.$$
-   
-4. **Predictor** (Euler):
-   
-   $$\phi_{\star} = \phi_{n} + f_{\phi}\,\Delta \tau,\quad v_{\star}   = v_{n} + f_{v}\,\Delta \tau + (\text{noiseAmp}) \, dW.$$
-   
-6. Evaluate drift at predicted state:
-   
-   $$f_{\phi,\star} = v_{\star} \quad f_{v,\star} = \gamma_{\mathrm{DC}} + \gamma_{\mathrm{AC}}\sin (\Omega(\tau_{n}+\Delta \tau))- I_{\mathrm{JJ}}(\phi_{\star})- \tfrac{1}{\beta_{c}} v_{\star}.$$
-   
-7. **Corrector**:
+1. We have \(\phi_n, v_n\). Generate a standard normal \(\xi\) and let \$dW = \xi\,\sqrt{\Delta\tau}\$.
+2. **Drift at old state**:
+   \[
+   f_\phi = v_n,\quad
+   f_v = \gamma_{\mathrm{DC}} + \gamma_{\mathrm{AC}}\,\sin(\Omega\,\tau_n)
+          - I_{\mathrm{JJ}}(\phi_n)
+          - \frac{v_n}{\beta_c}.
+   \]
+3. **Predictor** (Euler):
+   \[
+   \phi_\star = \phi_n + f_\phi\,\Delta\tau,\quad
+   v_\star   = v_n + f_v\,\Delta\tau + (\text{noiseAmp})\,dW.
+   \]
+4. Evaluate drift at predicted state:
+   \[
+   f_{\phi,\star} = v_\star,\quad
+   f_{v,\star} = \gamma_{\mathrm{DC}} + \gamma_{\mathrm{AC}}\sin(\Omega(\tau_n+\Delta\tau))
+                 - I_{\mathrm{JJ}}(\phi_\star)
+                 - \frac{v_\star}{\beta_c}.
+   \]
+5. **Corrector**:
+   \[
+   \phi_{n+1} = \phi_n + \frac{1}{2}\,(f_\phi + f_{\phi,\star})\,\Delta\tau,\quad
+   v_{n+1}    = v_n + \frac{1}{2}\,(f_v + f_{v,\star})\,\Delta\tau + (\text{noiseAmp})\,dW.
+   \]
 
-   $$\phi_{n+1} = \phi_{n} + \tfrac{1}{2}\bigl(f_{\phi} + f_{\phi,\star}\bigr) \Delta \tau \quad v_{n+1}   = v_{n} + \tfrac{1}{2}\bigl(f_{v} + f_{v,\star}\bigr)\,\Delta \tau + (\text{noiseAmp}) dW.$$
+This procedure is repeated for \$N\$ steps until we reach final time \(\tau = N\,\Delta\tau\). We then discard the transient portion and average or store the final dimensionless voltage.
